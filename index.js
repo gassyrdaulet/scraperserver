@@ -3,6 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import OfferRoutes from "./routes/OfferRoutes.js";
 import StoreRoutes from "./routes/StoreRoutes.js";
+import OtherRoutes from "./routes/OtherRoutes.js";
 import config from "./config.json" assert { type: "json" };
 
 const { PORT } = config;
@@ -17,6 +18,7 @@ app.use(
 );
 app.use("/api/offers/", OfferRoutes);
 app.use("/api/stores/", StoreRoutes);
+app.use("/api/other/", OtherRoutes);
 
 app.listen(PORT, () => {
   console.log("Server is live on port:", PORT);
