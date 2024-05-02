@@ -1,15 +1,23 @@
 import { Router } from "express";
-import pool from "../db.js";
-import moment from "moment";
+import fs from "fs/promises";
 
 const router = new Router();
 
-router.get("/getaboutinfo", async (req, res) => {
+router.get("/getaboutinfo", async (_, res) => {
   try {
     return res.status(200).json({
       message:
-        "Эта программа предназначена для автоматического снижения цен. Больше информации Вы можете получить по номеру +77088135765",
+        "Эта программа предназначена для автоматического снижения цен. Больше информации Вы можете получить по номеру +77068290879",
     });
+  } catch ({ message }) {
+    res.status(500).json({ message });
+  }
+});
+
+router.get("/getpayoffconfig", async (_, res) => {
+  try {
+    const text = await fs.readFile("./payoffconfig.json");
+    return res.status(200).json({ text });
   } catch ({ message }) {
     res.status(500).json({ message });
   }
