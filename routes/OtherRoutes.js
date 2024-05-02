@@ -23,4 +23,13 @@ router.get("/getpayoffconfig", async (_, res) => {
   }
 });
 
+router.get("/getpapersconfig", async (_, res) => {
+  try {
+    const text = await fs.readFile("./papersconfig.json");
+    return res.status(200).json({ text });
+  } catch ({ message }) {
+    res.status(500).json({ message });
+  }
+});
+
 export default router;

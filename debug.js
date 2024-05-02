@@ -9,10 +9,17 @@ const newSubData = {
 };
 
 const newSubDataPayoff = {
-  store_id: "15503068",
+  store_id: "1037010",
   days: 360,
   sum: 0,
-  cellphone: "+77073329342",
+  cellphone: "+77758181325",
+};
+
+const newSubDataPapers = {
+  store_id: "1037010",
+  days: 360,
+  sum: 0,
+  cellphone: "+77758181325",
 };
 
 const giveSub = async (data) => {
@@ -28,7 +35,16 @@ const giveSub = async (data) => {
 const giveSubPayOff = async (data) => {
   try {
     await pool.query(`INSERT INTO subspayoff SET ?`, data);
-    // await pool.query(`CREATE TABLE purchase_${data.store_id} LIKE prices`);
+    await pool.query(`CREATE TABLE purchase_${data.store_id} LIKE prices`);
+    console.log("Подписка успешно добавлена");
+  } catch ({ message }) {
+    console.log(message);
+  }
+};
+
+const giveSubPapers = async (data) => {
+  try {
+    await pool.query(`INSERT INTO subspapers SET ?`, data);
     console.log("Подписка успешно добавлена");
   } catch ({ message }) {
     console.log(message);
@@ -36,7 +52,8 @@ const giveSubPayOff = async (data) => {
 };
 
 // giveSub(newSubData);
-giveSubPayOff(newSubDataPayoff);
+// giveSubPayOff(newSubDataPayoff);
+// giveSubPapers(newSubDataPapers);
 
 const exportPrices = async () => {
   try {

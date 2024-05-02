@@ -1,0 +1,18 @@
+{
+  "sign_in_kaspi_merchant_url": "https://kaspi.kz/mc/api/login",
+  "sign_in_kaspi_merchant_headers": {
+    "accept": "application/json, text/plain, */*",
+    "accept-language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+    "content-type": "application/x-www-form-urlencoded;charset=UTF-8"
+  },
+  "sign_in_kaspi_merchant_cookie_key": "X-Mc-Api-Session-Id",
+  "sign_in_kaspi_merchant_appdata_url": "https://kaspi.kz/merchantcabinet/api/merchant/appData",
+  "server_url": "http://64.227.36.152",
+  "server_port": "2565",
+  "kaspi_orders_url": "https://kaspi.kz/mc/api/orderTabs/active",
+  "kaspi_merchant_archive_order_details_url": "https://mc.shop.kaspi.kz/mc/api/order/",
+  "production": false,
+  "lang": "ru",
+  "waybill_url": "https://kaspi.kz/mc/api/merchant/kaspi-delivery/waybill?orderCode=",
+  "kaspi_offer_url": "https://kaspi.kz/shop/p/-"
+}
