@@ -11,7 +11,7 @@
   "server_port": "2565",
   "kaspi_orders_url": "https://kaspi.kz/mc/api/orderTabs/active",
   "kaspi_merchant_archive_order_details_url": "https://mc.shop.kaspi.kz/mc/api/order/",
-  "production": false,
+  "production": true,
   "lang": "ru",
   "waybill_url": "https://kaspi.kz/mc/api/merchant/kaspi-delivery/waybill?orderCode=",
   "kaspi_offer_url": "https://kaspi.kz/shop/p/-"
