@@ -1,5 +1,6 @@
 import { Router } from "express";
 import pool from "../db.js";
+import _ from "lodash";
 
 const router = new Router();
 
@@ -70,7 +71,12 @@ router.post("/fillpurchase", async (req, res) => {
         editPrice
       );
     }
-    const values = newPrices.map((item) => [item.sku, item.image, item.name]);
+    const filteredNewPrices = _.uniqBy(newPrices, "sku");
+    const values = filteredNewPrices.map((item) => [
+      item.sku,
+      item.image,
+      item.name,
+    ]);
     if (values.length > 0) {
       await pool.query(
         `INSERT INTO purchase_${store_id} (sku, image, name) VALUES ?`,
