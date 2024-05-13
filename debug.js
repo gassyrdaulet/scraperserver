@@ -2,30 +2,32 @@ import pool from "./db.js";
 import xlsx from "xlsx";
 
 const newSubData = {
-  store_id: "18093787",
-  days: 7,
+  store_id: "18102055",
+  days: 1,
   sum: 0,
-  cellphone: "+77758307549",
+  cellphone: "+7718358566",
 };
 
 const newSubDataPayoff = {
-  store_id: "1037010",
-  days: 360,
+  store_id: "14916088",
+  days: 3,
   sum: 0,
-  cellphone: "+77758181325",
+  cellphone: "+77764252244",
 };
 
 const newSubDataPapers = {
-  store_id: "1037010",
-  days: 360,
+  store_id: "14916088",
+  days: 3,
   sum: 0,
-  cellphone: "+77758181325",
+  cellphone: "+77764252244",
 };
 
 const giveSub = async (data) => {
   try {
     await pool.query(`INSERT INTO subs SET ?`, data);
-    await pool.query(`CREATE TABLE prices_${data.store_id} LIKE prices`);
+    await pool.query(
+      `CREATE TABLE IF NOT EXISTS prices_${data.store_id}  LIKE prices`
+    );
     console.log("Подписка успешно добавлена");
   } catch ({ message }) {
     console.log(message);
@@ -35,7 +37,9 @@ const giveSub = async (data) => {
 const giveSubPayOff = async (data) => {
   try {
     await pool.query(`INSERT INTO subspayoff SET ?`, data);
-    await pool.query(`CREATE TABLE purchase_${data.store_id} LIKE prices`);
+    await pool.query(
+      `CREATE TABLE IF NOT EXISTS purchase_${data.store_id} LIKE prices`
+    );
     console.log("Подписка успешно добавлена");
   } catch ({ message }) {
     console.log(message);
@@ -51,7 +55,7 @@ const giveSubPapers = async (data) => {
   }
 };
 
-// giveSub(newSubData);
+giveSub(newSubData);
 // giveSubPayOff(newSubDataPayoff);
 // giveSubPapers(newSubDataPapers);
 

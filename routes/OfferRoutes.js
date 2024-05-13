@@ -223,6 +223,23 @@ router.post("/edit", async (req, res) => {
   }
 });
 
+router.post("/editprice", async (req, res) => {
+  try {
+    const { store_id, price } = req.body;
+    Object.keys(price).forEach((key) => {
+      if (!price[key]) price[key] = null;
+    });
+    await pool.query(
+      `UPDATE prices_${store_id} SET ? WHERE sku = ${price.sku}`,
+      price
+    );
+    res.status(200).json({ message: "ok" });
+  } catch ({ message }) {
+    console.log(message);
+    res.status(500).json({ message });
+  }
+});
+
 router.post("/export", async (req, res) => {
   try {
     const { storeId, prices } = req.body;
@@ -261,6 +278,55 @@ router.post("/export", async (req, res) => {
     if (values.length > 0) {
       await pool.query(
         `INSERT INTO prices_${storeId} (sku, min_price, max_price, mock) VALUES ?`,
+        [values]
+      );
+    }
+    res.status(200).json({ message: "ok" });
+  } catch ({ message }) {
+    console.log(message);
+    res.status(500).json({ message });
+  }
+});
+
+router.post("/import", async (req, res) => {
+  try {
+    const { storeId, prices } = req.body;
+    const [oldPrices] = await pool.query(`SELECT * FROM prices_${storeId}`);
+    const editPrices = [];
+    const newPrices = [];
+    prices.forEach((price) => {
+      const oldPrice = oldPrices.find((old) => old.sku === price.sku);
+      if (oldPrice) {
+        const isDifferent = Object.keys(price).some((key) => {
+          if (key === "id") return false;
+          if (!price[key] && !oldPrice[key]) {
+            return false;
+          }
+          return price[key] !== oldPrice[key];
+        });
+        if (isDifferent) {
+          editPrices.push(price);
+        }
+      } else {
+        newPrices.push(price);
+      }
+    });
+    for (let editPrice of editPrices) {
+      await pool.query(
+        `UPDATE prices_${storeId} SET ? WHERE sku = ${editPrice.sku}`,
+        editPrice
+      );
+    }
+    const values = newPrices.map((item) => [
+      item.sku,
+      item.min_price,
+      item.max_price,
+      item.mock,
+      item.preorder,
+    ]);
+    if (values.length > 0) {
+      await pool.query(
+        `INSERT INTO prices_${storeId} (sku, min_price, max_price, mock, preorder) VALUES ?`,
         [values]
       );
     }
