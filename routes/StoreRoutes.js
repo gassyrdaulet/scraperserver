@@ -8,11 +8,11 @@ const firstTimeDemoDays = 3;
 
 router.get("/checksub", async (req, res) => {
   try {
-    const {
-      storeid: storeId,
-      clientver: clientVer,
-      cityid: cityId,
-    } = req.headers;
+    const { storeid: storeId, cityid: cityId } = req.headers;
+
+    const clientVer = req.headers.clientver
+      ? req.headers.clientver
+      : req.headers.version;
 
     const paymentMethods = {
       internet: [
