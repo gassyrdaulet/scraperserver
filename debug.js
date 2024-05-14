@@ -2,10 +2,10 @@ import pool from "./db.js";
 import xlsx from "xlsx";
 
 const newSubData = {
-  store_id: "18102055",
-  days: 1,
+  store_id: "18521086",
+  days: 30,
   sum: 0,
-  cellphone: "+7718358566",
+  cellphone: "+77764231540",
 };
 
 const newSubDataPayoff = {

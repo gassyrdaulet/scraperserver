@@ -14,6 +14,7 @@ router.get("/checksub", async (req, res) => {
       ? req.headers.clientver
       : req.headers.version;
 
+    console.log("vers");
     const paymentMethods = {
       internet: [
         {
@@ -33,7 +34,7 @@ router.get("/checksub", async (req, res) => {
         {
           available: true,
           text: "WhatsApp",
-          url: `https://wa.me/7768290879`,
+          url: `https://wa.me/7768290879?text=Здравствуйте!%20Хочу%20приобрести%20подписку.%20ID:%20${storeId}.`,
           image:
             "https://i.ibb.co.com/KLDPrQZ/2062095-application-chat-communication-logo-whatsapp-icon-svg.png",
         },
@@ -64,20 +65,8 @@ router.get("/checksub", async (req, res) => {
       return settings ? settings : { ...defaultSettings, ignore: [] };
     };
 
-    const availableVersions = [
-      "1.0.0",
-      "1.0.1",
-      "1.0.2",
-      "1.0.3",
-      "1.0.4",
-      "1.0.5",
-    ];
-    let versionAvailable = false;
-    for (let version of availableVersions) {
-      if (version === clientVer) {
-        versionAvailable = true;
-      }
-    }
+    let versionAvailable = true;
+
     if (!versionAvailable) {
       return res.status(400).json({
         message:
@@ -155,7 +144,7 @@ router.post("/gethistory", async (req, res) => {
       `CREATE TABLE IF NOT EXISTS history_${store_id} like history`
     );
     const [history] = await pool.query(
-      `SELECT * FROM history_${store_id} ORDER BY id DESC limit 25;
+      `SELECT * FROM history_${store_id} ORDER BY id DESC limit 20;
     `
     );
     return res.send(history.reverse());
