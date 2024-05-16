@@ -51,7 +51,7 @@ router.get("/checksub", async (req, res) => {
       const defaultSettings = {
         store_id: storeId,
         damp: 1,
-        city: cityId,
+        city: cityId ? cityId : "710000000",
         interval: 5,
       };
       const [settings] = settings_array;
@@ -121,12 +121,14 @@ router.post("/updatesettings", async (req, res) => {
       }
     );
     data.ignore = JSON.stringify(data.ignore);
+    const city = data.city ? data.city : "710000000";
+    delete data.city;
     const [settings] = settings_array;
     if (!settings) {
       await pool.query(`INSERT INTO settings SET ?`, {
         ...data,
         store_id,
-        city_id: "710000000",
+        city,
       });
       return res.status(200).json({ message: "ok" });
     }
