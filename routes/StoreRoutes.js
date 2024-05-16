@@ -14,7 +14,6 @@ router.get("/checksub", async (req, res) => {
       ? req.headers.clientver
       : req.headers.version;
 
-    console.log("vers");
     const paymentMethods = {
       internet: [
         {
@@ -124,7 +123,11 @@ router.post("/updatesettings", async (req, res) => {
     data.ignore = JSON.stringify(data.ignore);
     const [settings] = settings_array;
     if (!settings) {
-      await pool.query(`INSERT INTO settings SET ?`, { ...data, store_id });
+      await pool.query(`INSERT INTO settings SET ?`, {
+        ...data,
+        store_id,
+        city_id: "710000000",
+      });
       return res.status(200).json({ message: "ok" });
     }
     await pool.query(

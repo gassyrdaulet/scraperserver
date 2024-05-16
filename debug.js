@@ -1,5 +1,6 @@
 import pool from "./db.js";
 import xlsx from "xlsx";
+import fs from "fs/promises";
 
 const newSubData = {
   store_id: "18521086",
@@ -34,6 +35,13 @@ const giveSub = async (data) => {
   }
 };
 
+const getPrices = async () => {
+  const storeId = "16431213";
+  const [prices] = await pool.query(`SELECT * FROM prices_${storeId}`);
+  await fs.writeFile("prices.json", JSON.stringify(prices));
+};
+getPrices();
+
 const giveSubPayOff = async (data) => {
   try {
     await pool.query(`INSERT INTO subspayoff SET ?`, data);
@@ -55,7 +63,7 @@ const giveSubPapers = async (data) => {
   }
 };
 
-giveSub(newSubData);
+// giveSub(newSubData);
 // giveSubPayOff(newSubDataPayoff);
 // giveSubPapers(newSubDataPapers);
 
