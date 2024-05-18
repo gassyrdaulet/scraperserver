@@ -242,7 +242,7 @@ router.post("/editprice", async (req, res) => {
 
 router.post("/export", async (req, res) => {
   try {
-    const { storeId, prices } = req.body;
+    const { storeId, withEngKeys: prices } = req.body;
     const [oldPrices] = await pool.query(`SELECT * FROM prices_${storeId}`);
     const editPrices = [];
     const newPrices = [];
@@ -274,10 +274,11 @@ router.post("/export", async (req, res) => {
       item.min_price,
       item.max_price,
       item.mock,
+      item.preorder,
     ]);
     if (values.length > 0) {
       await pool.query(
-        `INSERT INTO prices_${storeId} (sku, min_price, max_price, mock) VALUES ?`,
+        `INSERT INTO prices_${storeId} (sku, min_price, max_price, mock, preorder) VALUES ?`,
         [values]
       );
     }
@@ -290,7 +291,15 @@ router.post("/export", async (req, res) => {
 
 router.post("/import", async (req, res) => {
   try {
-    const { storeId, prices } = req.body;
+    const { storeId, prices: pricesPreorder } = req.body;
+    const prices = pricesPreorder.map((item) => {
+      const preorder = parseInt(item.preorder);
+      delete item.preorder;
+      return {
+        ...item,
+        preorder: isNaN(preorder) ? 0 : preorder,
+      };
+    });
     const [oldPrices] = await pool.query(`SELECT * FROM prices_${storeId}`);
     const editPrices = [];
     const newPrices = [];

@@ -36,11 +36,18 @@ const giveSub = async (data) => {
 };
 
 const getPrices = async () => {
-  const storeId = "16431213";
+  const storeId = "15503068";
   const [prices] = await pool.query(`SELECT * FROM prices_${storeId}`);
   await fs.writeFile("prices.json", JSON.stringify(prices));
 };
-getPrices();
+// getPrices();
+
+const getSkus = async () => {
+  const storeId = "18102055";
+  const [prices] = await pool.query(`SELECT * FROM prices_${storeId}`);
+  await fs.writeFile("skus.json", JSON.stringify(prices.map(({ sku }) => sku)));
+};
+getSkus();
 
 const giveSubPayOff = async (data) => {
   try {
