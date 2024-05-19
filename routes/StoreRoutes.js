@@ -133,12 +133,13 @@ router.post("/updatesettings", async (req, res) => {
       return res.status(200).json({ message: "ok" });
     }
     await pool.query(
-      `UPDATE settings SET ? WHERE store_id = ${store_id}`,
+      `UPDATE settings SET ? WHERE store_id = "${store_id}"`,
       data
     );
     return res.status(200).json({ message: "ok" });
-  } catch ({ message }) {
-    res.status(500).json({ message });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json(e.message);
   }
 });
 

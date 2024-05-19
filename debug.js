@@ -3,17 +3,17 @@ import xlsx from "xlsx";
 import fs from "fs/promises";
 
 const newSubData = {
-  store_id: "18521086",
+  store_id: "16431070",
   days: 30,
   sum: 0,
-  cellphone: "+77764231540",
+  cellphone: "+77475886758",
 };
 
 const newSubDataPayoff = {
-  store_id: "14916088",
-  days: 3,
+  store_id: "16431070",
+  days: 30,
   sum: 0,
-  cellphone: "+77764252244",
+  cellphone: "+77475886758",
 };
 
 const newSubDataPapers = {
@@ -47,7 +47,7 @@ const getSkus = async () => {
   const [prices] = await pool.query(`SELECT * FROM prices_${storeId}`);
   await fs.writeFile("skus.json", JSON.stringify(prices.map(({ sku }) => sku)));
 };
-getSkus();
+// getSkus();
 
 const giveSubPayOff = async (data) => {
   try {
@@ -70,7 +70,7 @@ const giveSubPapers = async (data) => {
   }
 };
 
-// giveSub(newSubData);
+giveSub(newSubData);
 // giveSubPayOff(newSubDataPayoff);
 // giveSubPapers(newSubDataPapers);
 
