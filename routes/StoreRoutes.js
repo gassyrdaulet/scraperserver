@@ -1,6 +1,7 @@
 import { Router } from "express";
 import pool from "../db.js";
 import moment from "moment";
+import { publishDeal } from "../bitrix.js";
 
 const router = new Router();
 
@@ -94,6 +95,7 @@ router.get("/checksub", async (req, res) => {
         `CREATE TABLE IF NOT EXISTS prices_${storeId} LIKE prices`
       );
       const settings = await checkSettings();
+      await publishDeal(firstTimeDemoDays, storeId, 9);
       return res
         .status(200)
         .json({ settings, sub: { ...data, date: new Date() }, paymentMethods });
