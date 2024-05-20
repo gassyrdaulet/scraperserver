@@ -1,7 +1,7 @@
 import bitrix from "./bitrix.json" assert { type: "json" };
 import config from "./config.json" assert { type: "json" };
 import fetch from "node-fetch";
-import HttpsProxyAgent from "https-proxy-agent";
+import { HttpsProxyAgent } from "https-proxy-agent";
 
 const { url } = bitrix;
 const { proxyConfig } = config;
