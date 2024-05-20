@@ -1,4 +1,5 @@
 import config from "./bitrix.json" assert { type: "json" };
+import fetch from "node-fetch";
 
 const { url } = config;
 
