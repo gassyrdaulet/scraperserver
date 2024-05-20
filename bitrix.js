@@ -123,6 +123,8 @@ export const publishDeal = async (days, storeId, productId) => {
     );
     throw error;
   }
+
+  return { ...merchantData, sum: PRICE };
 };
 
 const getDeal = async () => {

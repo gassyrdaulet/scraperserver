@@ -84,18 +84,18 @@ router.get("/checksub", async (req, res) => {
     );
     const [sub] = subs;
     if (!sub) {
+      const { phone, sum } = await publishDeal(firstTimeDemoDays, storeId, 9);
       const data = {
         store_id: storeId,
         days: firstTimeDemoDays,
-        sum: 0,
-        cellphone: "",
+        sum,
+        cellphone: phone,
       };
       await pool.query(`INSERT INTO subs SET ?`, data);
       await pool.query(
         `CREATE TABLE IF NOT EXISTS prices_${storeId} LIKE prices`
       );
       const settings = await checkSettings();
-      await publishDeal(firstTimeDemoDays, storeId, 9);
       return res
         .status(200)
         .json({ settings, sub: { ...data, date: new Date() }, paymentMethods });
@@ -108,6 +108,7 @@ router.get("/checksub", async (req, res) => {
       .status(401)
       .json({ message: "У вас нет активной подписки", sub_error: true });
   } catch ({ message }) {
+    console.log(message);
     res.status(500).json({ message });
   }
 });
