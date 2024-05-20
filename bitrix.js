@@ -1,7 +1,12 @@
-import config from "./bitrix.json" assert { type: "json" };
+import bitrix from "./bitrix.json" assert { type: "json" };
+import config from "./config.json" assert { type: "json" };
 import fetch from "node-fetch";
+import HttpsProxyAgent from "https-proxy-agent";
 
-const { url } = config;
+const { url } = bitrix;
+const { proxyConfig } = config;
+
+const agent = new HttpsProxyAgent(proxyConfig.url);
 
 const getMerchantInfo = async (merchantId) => {
   const formatPhoneNumber = (phoneNumber) => {
@@ -14,6 +19,7 @@ const getMerchantInfo = async (merchantId) => {
   const data = await fetch(
     `https://kaspi.kz/shop/info/merchant/${merchantId}/address-tab/`,
     {
+      agent,
       headers: {
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
