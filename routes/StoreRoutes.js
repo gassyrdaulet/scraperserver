@@ -164,7 +164,14 @@ router.post("/gethistory", async (req, res) => {
 
 router.post("/addtohistory", async (req, res) => {
   try {
-    const { store_id, data } = req.body;
+    const { store_id, data, errorlog } = req.body;
+    if (errorlog) {
+      await pool.query(`DELETE FROM errorlog where store_id = "${store_id}"`);
+      await pool.query(`INSERT INTO errorlog SET ?`, {
+        store_id,
+        errorlog: JSON.stringify(errorlog),
+      });
+    }
     await pool.query(
       `CREATE TABLE IF NOT EXISTS history_${store_id} like history`
     );
