@@ -15,6 +15,14 @@ router.get("/checksub", async (req, res) => {
       ? req.headers.clientver
       : req.headers.version;
 
+    const unsupportedVersions = ["1.0.12"];
+
+    if (unsupportedVersions.includes(clientVer)) {
+      return res
+        .status(400)
+        .json({ message: "Ваша версия программы больше не поддерживается" });
+    }
+
     const paymentMethods = {
       internet: [
         {

@@ -3,10 +3,10 @@ import xlsx from "xlsx";
 import fs from "fs/promises";
 
 const newSubData = {
-  store_id: "30085064",
-  days: 1,
+  store_id: "11925001",
+  days: 30,
   sum: 0,
-  cellphone: "+77713321350",
+  cellphone: "+7 775 254 7274",
 };
 
 const newSubDataPayoff = {
