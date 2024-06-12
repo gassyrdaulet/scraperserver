@@ -1,89 +1,47 @@
-const signInKaspiMerchant = async (username, password) => {
-  const getCookieFromResult = (cookies) => {
-    for (let cookie of cookies) {
-      if (cookie.name === "X-Mc-Api-Session-Id") {
-        return `${cookie.name}=${cookie.value}`;
-      }
+import config from "./config.json" assert { type: "json" };
+import axios from "axios";
+import { HttpsProxyAgent } from "https-proxy-agent";
+
+const { proxyConfig } = config;
+
+const httpsAgent = new HttpsProxyAgent(proxyConfig.url);
+
+const getMerchantInfo = async (merchantId) => {
+  const formatPhoneNumber = (phoneNumber) => {
+    const digits = phoneNumber.replace(/\D/g, "");
+    const formattedNumber = digits.startsWith("7")
+      ? "8" + digits.slice(1)
+      : digits;
+    return formattedNumber;
+  };
+  const { data } = await axios.get(
+    `https://kaspi.kz/shop/info/merchant/${merchantId}/address-tab/`,
+    {
+      httpsAgent,
+      baseURL: proxyConfig.url,
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
+      },
     }
-    throw new Error(
-      "Не удалось получить Cookie при входе в Кабинет продавца. Скорее всего неправильный логин, пароль или код."
-    );
-  };
-  if (viaEmail) {
-    const loginResult = await axios.post(
-      kaspiMerchantSignInUrl,
-      {
-        username,
-        password,
-      },
-      { headers: kaspiMerchantSignInHeaders }
-    );
-    const cookies = setCookie.parse(loginResult);
-    return getCookieFromResult(cookies);
-  } else {
-    const sendCodeResult = await axios.post(
-      kaspiMerchantSendCodeUrl,
-      `phone=${cellphone}`,
-      {
-        headers: kaspiMerchantSignInHeaders,
-      }
-    );
-    const sendCodeCookies = setCookie.parse(sendCodeResult);
-    const sendCodeCookie = getCookieFromResult(sendCodeCookies);
-    const { code } = await inquirer.prompt([
-      {
-        type: "input",
-        name: "code",
-        message: "Введите четыврехзначный код:",
-        validate: (v) =>
-          v.match(/^[0-9]{4}$/)
-            ? true
-            : "Пожалуйста, введите четырехзначный код.",
-      },
-    ]);
-    const loginResult = await axios.post(
-      kaspiMerchantSecurityCodeUrl,
-      `securityCode=${code}`,
-      {
-        headers: {
-          cookie: sendCodeCookie,
-        },
-      }
-    );
-    const cookies = setCookie.parse(loginResult);
-    return getCookieFromResult(cookies);
+  );
+  const html_string = data;
+  const phoneRegex = /\+\d{1,3}\s*\(\d{3}\)\s*\d{3}-\d{2}-\d{2}/;
+  const phoneNumber = html_string.match(phoneRegex);
+  if (!phoneNumber) {
+    const error = new Error(`Ошибка при поиске номера телефона`);
+    throw error;
   }
+  const nameRegex = /"name":\s*"([^"]+)",/g;
+  const names = [...html_string.matchAll(nameRegex)];
+  if (names <= 0) {
+    const error = new Error(`Ошибка при поиске названия магазина`);
+    throw error;
+  }
+  return {
+    phone: formatPhoneNumber(phoneNumber[0]),
+    name: names[names.length - 1][1],
+  };
 };
 
-const getOffersKaspiMerchant = async (cookie, kaspiMerchantId) => {
-  const prices = [];
-  const maxOffersLimit = 100;
-
-  const getOffers = async (p = 0, l = maxOffersLimit) => {
-    const resultFetch = await fetch(
-      kaspiMerchantOffersUrl +
-        new URLSearchParams({
-          m: kaspiMerchantId,
-          p,
-          l,
-          a: true,
-          t: "",
-        }),
-      {
-        headers: {
-          ...kaspiMerchantOffersHeaders,
-          cookie,
-        },
-        method: "GET",
-      }
-    );
-    const prices = await resultFetch.json();
-    return prices;
-  };
-  const { total } = await getOffers(0, 1);
-  for (let i = 0; i < total; i = i + maxOffersLimit) {
-    const { data } = await getOffers(Math.ceil(i / maxOffersLimit));
-    prices.push(...data);
-  }
-  return prices.filter((item) => item.available);
-};
+console.log(await getMerchantInfo("15503068"));

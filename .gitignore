@@ -3,3 +3,5 @@ config.json
 debug.js
 prices.json
 bitrix.json
+test.js
+tools.js

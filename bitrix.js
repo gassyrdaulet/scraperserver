@@ -52,86 +52,91 @@ const getMerchantInfo = async (merchantId) => {
 };
 
 export const publishDeal = async (days, storeId, productId) => {
-  let merchantData = {};
   try {
-    merchantData = await getMerchantInfo(storeId);
-  } catch (e) {
-    throw e;
-  }
-  const addContact = await fetch(url + "crm.contact.add", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      fields: {
-        NAME: merchantData.name,
-        PHONE: [{ VALUE: merchantData.phone, VALUE_TYPE: "WORK" }],
-        UF_CRM_1716121904346: storeId,
+    let merchantData = {};
+    try {
+      merchantData = await getMerchantInfo(storeId);
+    } catch (e) {
+      throw e;
+    }
+    const addContact = await fetch(url + "crm.contact.add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    }),
-  });
-  const contact = await addContact.json();
-  const { result: contactId } = contact;
-  if (!addContact.ok) {
-    const error = new Error("Ошибка при попытке создания контакта в Битрикс");
-    throw error;
-  }
-  const getPrice = await fetch(url + "catalog.price.get?id=" + productId, {
-    method: "GET",
-  });
-  const { result } = await getPrice.json();
-  const { price: PRICE } = result.price;
-  if (!getPrice.ok) {
-    const error = new Error(
-      "Ошибка при попытке выгрузки цены товарв из Битрикс"
-    );
-    throw error;
-  }
+      body: JSON.stringify({
+        fields: {
+          NAME: merchantData.name,
+          PHONE: [{ VALUE: merchantData.phone, VALUE_TYPE: "WORK" }],
+          UF_CRM_1716121904346: storeId,
+        },
+      }),
+    });
+    const contact = await addContact.json();
+    const { result: contactId } = contact;
+    if (!addContact.ok) {
+      const error = new Error("Ошибка при попытке создания контакта в Битрикс");
+      throw error;
+    }
+    const getPrice = await fetch(url + "catalog.price.get?id=" + productId, {
+      method: "GET",
+    });
+    const { result } = await getPrice.json();
+    const { price: PRICE } = result.price;
+    if (!getPrice.ok) {
+      const error = new Error(
+        "Ошибка при попытке выгрузки цены товарв из Битрикс"
+      );
+      throw error;
+    }
 
-  const fields = {
-    fields: {
-      STAGE_ID: "EXECUTING",
-      UF_CRM_1716125097863: days,
-      UF_CRM_1716123487396: storeId,
-      CONTACT_ID: contactId,
-      UF_CRM_1716128289935: merchantData.name,
-    },
-    params: { REGISTER_SONET_EVENT: "Y" },
-  };
-  const addDeal = await fetch(url + "crm.deal.add", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(fields),
-  });
-  if (!addDeal.ok) {
-    const error = new Error("Ошибка при попытке выгрузки сделки в Битрикс");
-    throw error;
+    const fields = {
+      fields: {
+        STAGE_ID: "EXECUTING",
+        UF_CRM_1716125097863: days,
+        UF_CRM_1716123487396: storeId,
+        CONTACT_ID: contactId,
+        UF_CRM_1716128289935: merchantData.name,
+      },
+      params: { REGISTER_SONET_EVENT: "Y" },
+    };
+    const addDeal = await fetch(url + "crm.deal.add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(fields),
+    });
+    if (!addDeal.ok) {
+      const error = new Error("Ошибка при попытке выгрузки сделки в Битрикс");
+      throw error;
+    }
+
+    const { result: newId } = await addDeal.json();
+    const rows = {
+      id: newId,
+      rows: [{ PRODUCT_ID: productId, PRICE }],
+    };
+    const addProduct = await fetch(url + "crm.deal.productrows.set", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(rows),
+    });
+
+    if (!addProduct.ok) {
+      const error = new Error(
+        "Ошибка при попытке изменить товары сделки в Битрикс"
+      );
+      throw error;
+    }
+
+    return { ...merchantData, sum: PRICE };
+  } catch (e) {
+    console.log("Publish Deal Error:", e.message);
+    return { phone: "", sum: 0 };
   }
-
-  const { result: newId } = await addDeal.json();
-  const rows = {
-    id: newId,
-    rows: [{ PRODUCT_ID: productId, PRICE }],
-  };
-  const addProduct = await fetch(url + "crm.deal.productrows.set", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(rows),
-  });
-
-  if (!addProduct.ok) {
-    const error = new Error(
-      "Ошибка при попытке изменить товары сделки в Битрикс"
-    );
-    throw error;
-  }
-
-  return { ...merchantData, sum: PRICE };
 };
 
 const getDeal = async () => {
