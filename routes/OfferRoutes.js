@@ -322,7 +322,7 @@ router.post("/import", async (req, res) => {
     });
     for (let editPrice of editPrices) {
       await pool.query(
-        `UPDATE prices_${storeId} SET ? WHERE sku = ${editPrice.sku}`,
+        `UPDATE prices_${storeId} SET ? WHERE sku = "${editPrice.sku}"`,
         editPrice
       );
     }
