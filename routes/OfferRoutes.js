@@ -293,6 +293,7 @@ router.post("/import", async (req, res) => {
   try {
     const { storeId, prices: pricesPreorder } = req.body;
     const prices = pricesPreorder.map((item) => {
+      item.sku = String(item.sku);
       const preorder = parseInt(item.preorder);
       delete item.preorder;
       return {
@@ -326,22 +327,30 @@ router.post("/import", async (req, res) => {
         editPrice
       );
     }
-    const values = newPrices.map((item) => [
-      String(item.sku),
-      item.min_price,
-      item.max_price,
-      item.mock,
-      item.preorder,
-    ]);
-    if (values.length > 0) {
+    const uniquePrices = [];
+    const seenSkus = new Set();
+    newPrices.forEach((item) => {
+      if (!seenSkus.has(item.sku)) {
+        uniquePrices.push([
+          String(item.sku),
+          item.min_price,
+          item.max_price,
+          item.mock,
+          item.preorder,
+        ]);
+        seenSkus.add(item.sku);
+      }
+    });
+    if (uniquePrices.length > 0) {
       await pool.query(
         `INSERT INTO prices_${storeId} (sku, min_price, max_price, mock, preorder) VALUES ?`,
-        [values]
+        [uniquePrices]
       );
     }
     res.status(200).json({ message: "ok" });
-  } catch ({ message }) {
-    console.log(message);
+  } catch (e) {
+    const { message } = e;
+    console.log(e.message);
     res.status(500).json({ message });
   }
 });
