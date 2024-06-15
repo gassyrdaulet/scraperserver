@@ -327,7 +327,7 @@ router.post("/import", async (req, res) => {
       );
     }
     const values = newPrices.map((item) => [
-      item.sku,
+      String(item.sku),
       item.min_price,
       item.max_price,
       item.mock,
