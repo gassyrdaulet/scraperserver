@@ -15,7 +15,7 @@ router.get("/checksub", async (req, res) => {
       ? req.headers.clientver
       : req.headers.version;
 
-    const unsupportedVersions = ["1.0.12"];
+    const unsupportedVersions = ["1.0.12", "1.0.14", "1.0.15"];
 
     if (unsupportedVersions.includes(clientVer)) {
       return res
