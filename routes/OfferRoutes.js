@@ -230,7 +230,7 @@ router.post("/editprice", async (req, res) => {
       if (!price[key]) price[key] = null;
     });
     await pool.query(
-      `UPDATE prices_${store_id} SET ? WHERE sku = ${price.sku}`,
+      `UPDATE prices_${store_id} SET ? WHERE sku = '${price.sku}'`,
       price
     );
     res.status(200).json({ message: "ok" });
