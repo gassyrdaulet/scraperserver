@@ -135,7 +135,7 @@ export const publishDeal = async (days, storeId, productId) => {
     return { ...merchantData, sum: PRICE };
   } catch (e) {
     console.log("Publish Deal Error:", e.message);
-    return { phone: "", sum: 0 };
+    return { phone: "", sum: 0, name: "" };
   }
 };
 

@@ -92,13 +92,22 @@ router.get("/checksub", async (req, res) => {
     );
     const [sub] = subs;
     if (!sub) {
-      const { phone, sum } = await publishDeal(firstTimeDemoDays, storeId, 9);
+      const { phone, sum, name } = await publishDeal(
+        firstTimeDemoDays,
+        storeId,
+        9
+      );
       const data = {
         store_id: storeId,
         days: firstTimeDemoDays,
         sum,
         cellphone: phone,
       };
+      await pool.query(`INSERT INTO stores SET ?`, {
+        store_id: storeId,
+        name,
+        phone,
+      });
       await pool.query(`INSERT INTO subs SET ?`, data);
       await pool.query(
         `CREATE TABLE IF NOT EXISTS prices_${storeId} LIKE prices`
